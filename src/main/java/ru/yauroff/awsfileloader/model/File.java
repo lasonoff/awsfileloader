@@ -17,7 +17,7 @@ public class File extends BaseEntity {
     @Column(name = "name", length = 30)
     private String name;
 
-    @Column(name = "fileLocation")
+    @Column(name = "file_location")
     private String fileLocation;
 
     @Column(name = "description")

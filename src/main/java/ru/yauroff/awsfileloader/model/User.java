@@ -1,5 +1,6 @@
 package ru.yauroff.awsfileloader.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,11 +11,9 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "user")
-@Getter
-@Setter
-@ToString
 public class User extends BaseEntity {
     @Column(name = "login", length = 20)
     @NaturalId
@@ -23,11 +22,19 @@ public class User extends BaseEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "firstName")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "lastName")
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "role")
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
+
+    @Column(name = "status")
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

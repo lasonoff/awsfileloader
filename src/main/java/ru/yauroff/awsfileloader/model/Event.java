@@ -14,14 +14,14 @@ import javax.persistence.*;
 public class Event extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "fileId")
+    @JoinColumn(name = "file_id")
     private File file;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "actionType")
+    @Column(name = "action_type")
     private ActionType actionType;
 
 }
