@@ -2,6 +2,7 @@ package ru.yauroff.awsfileloader.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.yauroff.awsfileloader.model.User;
 import ru.yauroff.awsfileloader.repository.UserRepository;
@@ -24,6 +25,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getById(Long id) {
         return userRepository.getById(id);
+    }
+
+    @Override
+    public User getByLogin(String login) {
+        return userRepository.findByLogin(login).orElse(null);
     }
 
     @Override

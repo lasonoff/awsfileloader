@@ -1,5 +1,6 @@
 package ru.yauroff.awsfileloader.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,9 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "event")
-@Getter
-@Setter
-@ToString
+@Data
 public class Event extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

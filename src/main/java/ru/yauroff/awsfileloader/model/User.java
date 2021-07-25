@@ -1,9 +1,9 @@
 package ru.yauroff.awsfileloader.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
 
@@ -11,9 +11,11 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-@Data
 @Entity
 @Table(name = "user")
+@Data
+@NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "events", "password"})
 public class User extends BaseEntity {
     @Column(name = "login", length = 20)
     @NaturalId
@@ -44,4 +46,13 @@ public class User extends BaseEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
     private transient List<Event> events;
 
+    public User(Long id, String login, String password, String firstName, String lastName, Role role, Status status) {
+        setId(id);
+        this.login = login;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
+        this.status = status;
+    }
 }

@@ -1,5 +1,6 @@
 package ru.yauroff.awsfileloader.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,9 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "file")
-@Getter
-@Setter
-@ToString
+@Data
 public class File extends BaseEntity {
     @Column(name = "name", length = 30)
     private String name;

@@ -10,6 +10,8 @@ public interface UserService {
 
     User getById(Long id);
 
+    User getByLogin(String login);
+
     long getCount();
 
     User create(User user);
