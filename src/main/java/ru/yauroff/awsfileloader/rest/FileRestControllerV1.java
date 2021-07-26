@@ -1,6 +1,8 @@
 package ru.yauroff.awsfileloader.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +10,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.yauroff.awsfileloader.model.*;
+import ru.yauroff.awsfileloader.model.File;
+import ru.yauroff.awsfileloader.model.FileStatus;
+import ru.yauroff.awsfileloader.model.User;
 import ru.yauroff.awsfileloader.service.FileService;
 import ru.yauroff.awsfileloader.service.UserService;
 
@@ -58,21 +62,15 @@ public class FileRestControllerV1 {
         fileEntity.setName(name);
         fileEntity.setStatus(FileStatus.ACTIVE);
 
-        Event event = new Event();
-        event.setUser(user);
-        event.setFile(fileEntity);
-        event.setActionType(ActionType.LOAD);
-
         try {
-            fileEntity = this.fileService.uploadFile(fileEntity, event, multipartFile);
+            fileEntity = this.fileService.uploadFile(multipartFile, fileEntity, user);
         } catch (IOException e) {
             new ResponseEntity<>("Error upload file", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(fileEntity, HttpStatus.OK);
     }
 
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('files:read')")
     public ResponseEntity<File> getFile(@PathVariable("id") Long fileId) {
         if (fileId == null) {
@@ -83,6 +81,52 @@ public class FileRestControllerV1 {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(file, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/download")
+    @PreAuthorize("hasAuthority('files:read')")
+    public ResponseEntity<Resource> downloadFile(@PathVariable("id") Long fileId,
+                                                 Authentication authentication) {
+        if (fileId == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        File file = fileService.getById(fileId);
+        if (file == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        User user = userService.getByLogin(authentication.getName());
+        Resource fileResource = null;
+        try {
+            fileResource = this.fileService.downloadFile(file, user);
+        } catch (IOException e) {
+            new ResponseEntity<>("Error download file", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok()
+                             .header(HttpHeaders.CONTENT_DISPOSITION,
+                                     "attachment; filename=\"" + file.getName() + "\"")
+                             .body(fileResource);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('files:write')")
+    public ResponseEntity<File> deleteFileById(@PathVariable("id") Long fileId, Authentication authentication) {
+        if (fileId == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        User user = userService.getByLogin(authentication.getName());
+
+        File fileEntity = fileService.getById(fileId);
+        if (fileEntity == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        fileEntity.setStatus(FileStatus.DELETED);
+
+        try {
+            this.fileService.deleteFile(fileEntity, user);
+        } catch (IOException e) {
+            new ResponseEntity<>("Error delete file", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/count", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

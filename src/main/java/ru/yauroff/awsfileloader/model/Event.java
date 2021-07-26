@@ -1,6 +1,6 @@
 package ru.yauroff.awsfileloader.model;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,7 +9,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "event")
-@Data
+@Getter
+@Setter
+@ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Event extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

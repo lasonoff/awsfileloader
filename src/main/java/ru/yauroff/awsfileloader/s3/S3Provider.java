@@ -1,6 +1,9 @@
 package ru.yauroff.awsfileloader.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -41,7 +44,14 @@ public class S3Provider {
         tempFile.delete();
     }
 
+    public File downloadObject(String fileLocation, String fileName) throws IOException {
+        File tempFile = File.createTempFile(fileName, ".tmp");
+        ObjectMetadata objectMetadata = amazonS3.getObject(new GetObjectRequest(bucketName,
+                fileLocation + DELIMITER + fileName), tempFile);
+        return tempFile;
+    }
+
     public void deleteObject(String fileLocation, String fileName) {
-        amazonS3.deleteObject(bucketName, fileLocation + DELIMITER +fileName);
+        amazonS3.deleteObject(bucketName, fileLocation + DELIMITER + fileName);
     }
 }
