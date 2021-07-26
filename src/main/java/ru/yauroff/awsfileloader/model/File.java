@@ -12,7 +12,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "file")
-@Data
+@Getter
+@Setter
+@ToString
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class File extends BaseEntity {
     @Column(name = "name", length = 30)

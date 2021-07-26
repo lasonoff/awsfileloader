@@ -1,1 +1,1 @@
-web: java -jar build/server/webapp-runner.jar --port $PORT build/libs/*.war
+web: java -jar build/libs/awsfileloader-0.0.1-SNAPSHOT.jar
