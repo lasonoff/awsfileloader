@@ -24,6 +24,20 @@ flyway {
 
 flywayMigrate.dependsOn classes
 
+task stage() {
+    dependsOn clean, war
+}
+war.mustRunAfter clean
+
+task copyToLib(type: Copy) {
+    into "$buildDir/server"
+    from(configurations.compile) {
+        include "webapp-runner*"
+    }
+}
+
+stage.dependsOn(copyToLib)
+
 repositories {
     mavenCentral()
     maven {
@@ -40,6 +54,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk:1.11.163'
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.2'
     compileOnly 'org.projectlombok:lombok'
+    compileOnly 'com.github.jsimone:webapp-runner:8.5.11.3'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'
