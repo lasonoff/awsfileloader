@@ -3,7 +3,6 @@ package ru.yauroff.awsfileloader.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,6 +23,7 @@ public class S3Provider {
 
     @Value("${s3.bucket}")
     private String bucketName;
+
 
     public void putObject(MultipartFile multipartFile, String fileLocation, String fileName) throws IOException {
         // Create temp file

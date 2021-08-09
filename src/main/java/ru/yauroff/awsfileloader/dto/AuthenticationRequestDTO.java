@@ -1,4 +1,4 @@
-package ru.yauroff.awsfileloader.rest.dto;
+package ru.yauroff.awsfileloader.dto;
 
 import lombok.Data;
 

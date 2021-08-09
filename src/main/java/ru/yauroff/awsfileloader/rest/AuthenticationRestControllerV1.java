@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yauroff.awsfileloader.model.User;
 import ru.yauroff.awsfileloader.repository.UserRepository;
-import ru.yauroff.awsfileloader.rest.dto.AuthenticationRequestDTO;
+import ru.yauroff.awsfileloader.dto.AuthenticationRequestDTO;
 import ru.yauroff.awsfileloader.security.JwtTokenProvider;
 
 import javax.servlet.http.HttpServletRequest;
