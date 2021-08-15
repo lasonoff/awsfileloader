@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.yauroff.awsfileloader.dto.FileResponseDTO;
 import ru.yauroff.awsfileloader.model.File;
 import ru.yauroff.awsfileloader.model.FileStatus;
 import ru.yauroff.awsfileloader.model.User;
@@ -19,6 +20,7 @@ import ru.yauroff.awsfileloader.service.UserService;
 import javax.servlet.MultipartConfigElement;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -35,22 +37,25 @@ public class FileRestControllerV1 {
 
     @GetMapping
     @PreAuthorize("hasAuthority('files:read')")
-    public ResponseEntity<List<File>> getAllFiles() {
+    public ResponseEntity<List<FileResponseDTO>> getAllFiles() {
         List<File> fileList = fileService.getAll();
         if (fileList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(fileList, HttpStatus.OK);
+        List<FileResponseDTO> fileResponseDTOList = fileList.stream()
+                                                            .map(file -> FileResponseDTO.fromFile(file))
+                                                            .collect(Collectors.toList());
+        return new ResponseEntity<>(fileResponseDTOList, HttpStatus.OK);
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('files:write')")
     public @ResponseBody
-    ResponseEntity<File> uploadFile(@RequestParam("name") String name,
-                                    @RequestParam("location") String location,
-                                    @RequestParam("description") String description,
-                                    @RequestParam("file") MultipartFile multipartFile,
-                                    Authentication authentication) {
+    ResponseEntity<FileResponseDTO> uploadFile(@RequestParam("name") String name,
+                                               @RequestParam("location") String location,
+                                               @RequestParam("description") String description,
+                                               @RequestParam("file") MultipartFile multipartFile,
+                                               Authentication authentication) {
         if (multipartFile.isEmpty() || name == null || location == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -67,12 +72,13 @@ public class FileRestControllerV1 {
         } catch (IOException e) {
             new ResponseEntity<>("Error upload file", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(fileEntity, HttpStatus.OK);
+        FileResponseDTO fileResponseDTO = FileResponseDTO.fromFile(fileEntity);
+        return new ResponseEntity<>(fileResponseDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('files:read')")
-    public ResponseEntity<File> getFile(@PathVariable("id") Long fileId) {
+    public ResponseEntity<FileResponseDTO> getFile(@PathVariable("id") Long fileId) {
         if (fileId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -80,7 +86,8 @@ public class FileRestControllerV1 {
         if (file == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(file, HttpStatus.OK);
+        FileResponseDTO fileResponseDTO = FileResponseDTO.fromFile(file);
+        return new ResponseEntity<>(fileResponseDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/download")
@@ -109,7 +116,7 @@ public class FileRestControllerV1 {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('files:write')")
-    public ResponseEntity<File> deleteFileById(@PathVariable("id") Long fileId, Authentication authentication) {
+    public ResponseEntity<FileResponseDTO> deleteFileById(@PathVariable("id") Long fileId, Authentication authentication) {
         if (fileId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -135,6 +142,4 @@ public class FileRestControllerV1 {
         Long count = this.fileService.getCount();
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
-
-
 }

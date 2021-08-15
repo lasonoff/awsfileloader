@@ -13,6 +13,7 @@ import java.util.Date;
 @Setter
 @Getter
 public class UserResponseDTO {
+    private Long id;
     private String login;
     private String firstName;
     private String lastName;
@@ -21,7 +22,8 @@ public class UserResponseDTO {
     private Date created;
 
     public static UserResponseDTO fromUser(User user) {
-        UserResponseDTO userResponseDTO = new UserResponseDTO(user.getLogin(),
+        UserResponseDTO userResponseDTO = new UserResponseDTO(user.getId(),
+                user.getLogin(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getRole(),
