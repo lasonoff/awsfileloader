@@ -12,8 +12,8 @@ import ru.yauroff.awsfileloader.model.File;
 import ru.yauroff.awsfileloader.model.User;
 import ru.yauroff.awsfileloader.repository.EventRepository;
 import ru.yauroff.awsfileloader.repository.FileRepository;
-import ru.yauroff.awsfileloader.s3.S3Provider;
 import ru.yauroff.awsfileloader.service.FileService;
+import ru.yauroff.awsfileloader.service.S3Service;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,7 +28,7 @@ public class FileServiceImpl implements FileService {
     private EventRepository eventRepository;
 
     @Autowired
-    private S3Provider s3Provider;
+    private S3Service s3Service;
 
     @Override
     public List<File> getAll() {
@@ -47,7 +47,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public File uploadFile(MultipartFile multipartFile, File fileEntity, User user) throws IOException {
-        s3Provider.putObject(multipartFile, fileEntity.getFileLocation(), fileEntity.getName());
+        s3Service.putObject(multipartFile, fileEntity.getFileLocation(), fileEntity.getName());
         File file = fileRepository.save(fileEntity);
         Event event = new Event();
         event.setUser(user);
@@ -59,7 +59,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public Resource downloadFile(File fileEntity, User user) throws IOException {
-        java.io.File downloadFile = s3Provider.downloadObject(fileEntity.getFileLocation(), fileEntity.getName());
+        java.io.File downloadFile = s3Service.downloadObject(fileEntity.getFileLocation(), fileEntity.getName());
         Event event = new Event();
         event.setUser(user);
         event.setFile(fileEntity);
@@ -71,7 +71,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public void deleteFile(File fileEntity, User user) throws IOException {
         try {
-            s3Provider.deleteObject(fileEntity.getFileLocation(), fileEntity.getName());
+            s3Service.deleteObject(fileEntity.getFileLocation(), fileEntity.getName());
         } catch (SdkClientException e) {
             throw new IOException(e.getMessage());
         }

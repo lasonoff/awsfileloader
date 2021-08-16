@@ -1,11 +1,11 @@
-package ru.yauroff.awsfileloader.s3;
+package ru.yauroff.awsfileloader.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedOutputStream;
@@ -13,8 +13,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-@Component
-public class S3Provider {
+@Service
+public class S3Service {
 
     private final String DELIMITER = "/";
 
